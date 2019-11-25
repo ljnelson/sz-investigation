@@ -78,6 +78,12 @@ class MainTest {
         Assertions.assertEquals(200, r.getStatus(), "GET metrics status code");
 
         r = client
+                .target(getConnectionString("/probe"))
+                .request()
+                .get();
+        Assertions.assertEquals(200, r.getStatus(), "GET probe status code");
+
+        r = client
                 .target(getConnectionString("/health"))
                 .request()
                 .get();
