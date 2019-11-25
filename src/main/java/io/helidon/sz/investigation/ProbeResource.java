@@ -32,22 +32,19 @@ public class ProbeResource {
     @GET
     @Path("")
     @Produces(MediaType.TEXT_PLAIN)
-    public String probe() {
-        String returnValue = null;
+    public Response probe() {        
+        int status = -1;
         try (final Connection connection = this.dataSource.getConnection();
              final Statement statement = connection.createStatement();
              final ResultSet resultSet = statement.executeQuery("SELECT COUNT(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES")) {
             resultSet.next();
             final int count = resultSet.getInt(1);
-            if (count > 0) {
-                returnValue = "healthy";
-            } else {
-                returnValue = "unhealthy";
-            }
+            status = count > 0 ? 200 : 500;
         } catch (final SQLException kaboom) {
             kaboom.printStackTrace();
-            returnValue = "unhealthy";
+            status = 500;            
         }
+        final Response returnValue = Response.status(status).entity(status == 500 ? "unhealthy" : "healthy").build();
         return returnValue;
     }
 
